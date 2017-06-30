@@ -1,8 +1,8 @@
-from numpy import empty
+import numpy as np
 
 def factorial_seq(n):
     """Return a sequence of factorials from 0! to n!."""
-    seq = empty(n + 1, dtype=int)
+    seq = np.empty(n + 1, dtype=int)
     seq[0] = 1
     for i in range(1, n + 1):
         seq[i] = seq[i - 1] * i
@@ -19,7 +19,7 @@ def simplicial_seq(n, k):
     n -- dim(domain(f)).
     k -- maximum derivative degree.
     """
-    seq = empty(k + 1, dtype=int)
+    seq = np.empty(k + 1, dtype=int)
     seq[0] = 1
     for i in range(1, k + 1):
         seq[i] = seq[i - 1] * (n + i - 1) / i

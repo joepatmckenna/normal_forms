@@ -1,6 +1,5 @@
-from numpy import max, product
-from numpy import zeros as numpy_zeros
-from combinatorics import factorial_seq
+import numpy as np
+import combinatorics
 
 
 class multiindex(object):
@@ -18,17 +17,22 @@ class multiindex(object):
         idx_max -- upper bound of (exclusive) of indices
         """
 
-        self.idx = numpy_zeros(n, dtype=int)
+        self.idx = np.zeros(n, dtype=int)
         self.idx_max = idx_max
 
     def increment(self):
         """
-        Increment multiindex. A 'telephone-book' ordering is used and indices are assumed to be increasing from left to right. For example, the multiindices of length 2 with individual indices less than idx_max=3 are, in increasing order: (0,0), (0,1), (0,2), (1,1), (1,2), (2,2). Next multiindex is cycled back to the first multiindex.
+        Increment multiindex. A 'telephone-book' ordering
+        is used and indices are assumed to be increasing from
+        left to right. For example, the multiindices of length
+        2 with individual indices less than idx_max=3 are, in
+        increasing order: (0,0), (0,1), (0,2), (1,1), (1,2), (2,2).
+        Next multiindex is cycled back to the first multiindex.
         """
 
         n_idx = len(self.idx)
         if all(self.idx >= self.idx_max):
-            self.idx = numpy_zeros(n_idx, dtype=int)
+            self.idx = np.zeros(n_idx, dtype=int)
         else:
             i = n_idx - 1
             self.idx[i] += 1
@@ -45,7 +49,7 @@ class multiindex(object):
         x -- roots of polynomials
         """
 
-        return product([var[idx] - x[idx] for idx in self.idx])
+        return np.product([var[idx] - x[idx] for idx in self.idx])
 
     def to_var(self, var):
         """
@@ -58,8 +62,8 @@ class multiindex(object):
     def factorial(self):
         """calculate multiindex factorial"""
 
-        fac_key = numpy_zeros(self.idx_max, dtype=int)
+        fac_key = np.zeros(self.idx_max, dtype=int)
         for idx in self.idx:
             fac_key[idx] += 1
-        fac = factorial_seq(int(max(fac_key)))
-        return product([fac[key] for key in fac_key])
+        fac = combinatorics.factorial_seq(int(np.max(fac_key)))
+        return np.product([fac[key] for key in fac_key])
