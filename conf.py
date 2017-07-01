@@ -31,7 +31,7 @@ sys.path.append(os.path.abspath('sphinxext'))
 # ones.
 extensions = [
     'sphinx.ext.mathjax', 'sphinx.ext.autodoc', 'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages', 'sphinxcontrib.napoleon',
+    'sphinx.ext.githubpages', 'sphinx.ext.napoleon',
     'matplotlib.sphinxext.only_directives',
     'matplotlib.sphinxext.plot_directive',
     'IPython.sphinxext.ipython_directive',
