@@ -31,11 +31,7 @@ sys.path.append(os.path.abspath('sphinxext'))
 # ones.
 extensions = [
     'sphinx.ext.mathjax', 'sphinx.ext.autodoc', 'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages', 'sphinx.ext.napoleon',
-    'matplotlib.sphinxext.only_directives',
-    'matplotlib.sphinxext.plot_directive',
-    'IPython.sphinxext.ipython_directive',
-    'IPython.sphinxext.ipython_console_highlighting'
+    'sphinx.ext.githubpages', 'sphinx.ext.napoleon', 'plot_directive'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -94,7 +90,10 @@ html_theme_path = ['./_theme']
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {'rootlinks': (("https://joepatmckenna.github.io","joe mckenna"),("a", "b"))}
+html_theme_options = {
+    'rootlinks': (("https://joepatmckenna.github.io", "joe mckenna"),
+                  ("http://normal-forms.rtfd.io", "rtfd"))
+}
 # html_theme_options = {
 #     'edit_link': False,
 #     'rootlinks': ('http://joepatmckenna.github.io', 'joe mckenna'),

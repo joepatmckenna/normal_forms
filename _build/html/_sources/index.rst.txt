@@ -10,6 +10,7 @@ normal_forms documentation
    :maxdepth: 2
 
    jets
+   docs/source/modules
 
 Indices and tables
 ==================
