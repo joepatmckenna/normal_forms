@@ -1,2 +1,2 @@
-from series import jet
+from jet import jet
 

@@ -4,10 +4,10 @@ setup(
     name='normal_forms',
     version='0.1',
     description='Normal forms of dynamical systems',
-    url='https://github.com/joepatmckenna/normal',
+    keywords='normal form differential equation dynamical system bifurcation',
+    url='https://github.com/joepatmckenna/normal_forms',
     author='Joseph P. McKenna',
     author_email='joepatmckenna@gmail.com',
-    license='MIT',
     packages=['normal_forms'],
     install_requires=['numpy', 'sympy'],
     zip_safe=False)
