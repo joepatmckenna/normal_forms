@@ -8,6 +8,7 @@ setup(
     url='https://github.com/joepatmckenna/normal_forms',
     author='Joseph P. McKenna',
     author_email='joepatmckenna@gmail.com',
+    license='MIT',
     packages=['normal_forms'],
     install_requires=['numpy', 'sympy'],
     zip_safe=False)
