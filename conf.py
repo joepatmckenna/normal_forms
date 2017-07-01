@@ -94,13 +94,6 @@ html_theme_options = {
     'rootlinks': (("https://joepatmckenna.github.io", "joe mckenna"),
                   ("http://normal-forms.rtfd.io", "rtfd"))
 }
-# html_theme_options = {
-#     'edit_link': False,
-#     'rootlinks': ('http://joepatmckenna.github.io', 'joe mckenna'),
-#     'sidebar': 'left',
-#     'scipy_org_logo': False,
-#     'navigation_links': True
-# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
