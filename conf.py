@@ -92,7 +92,7 @@ html_theme_path = ['./_theme']
 #
 html_theme_options = {
     'rootlinks': (("https://joepatmckenna.github.io", "joe mckenna"),
-                  ("http://normal-forms.rtfd.io", "rtfd"))
+                  ("index.html", "normal forms"))
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
