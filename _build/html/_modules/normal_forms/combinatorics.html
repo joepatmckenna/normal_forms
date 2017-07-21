@@ -86,33 +86,33 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <div class="viewcode-block" id="factorial_list"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.combinatorics.factorial_list">[docs]</a><span class="k">def</span> <span class="nf">factorial_list</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a list of factorials</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of factorials.</span>
 
-<span class="sd">    Arguments</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    n : int</span>
 <span class="sd">        maximum index of factorial list</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    numpy array with shape (``n+1``,1) and dtype ``int``</span>
+<span class="sd">    ``numpy.array(n+1,1)`` of ``dtype`` ``int``</span>
 <span class="sd">        list of factorials :math:`0!, \\ldots, n!`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">seq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span>
-    <span class="k">return</span> <span class="n">seq</span></div>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 <div class="viewcode-block" id="simplicial_list"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.combinatorics.simplicial_list">[docs]</a><span class="k">def</span> <span class="nf">simplicial_list</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a list of simplicial numbers</span>
+<span class="sd">    Return a list of simplicial numbers.</span>
 
-<span class="sd">    The simplicial number :math:`{n+j-1 \\choose j}` is the number of :math:`j^{th}` degree partial derivatives of a function :math:`f` with domain of dimension :math:`n`.</span>
+<span class="sd">    The simplicial number :math:`{n+j-1 \\choose j}` is the number of :math:`j^{th}` degree partial derivatives of a function :math:`f` with domain of dimension :math:`n`, i.e. the number of homogenous :math:`j^{th}` degree monoomials with unitary coefficient.</span>
 
-<span class="sd">    Arguments</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    n : int</span>
 <span class="sd">        dimension of domain of :math:`f`</span>
 <span class="sd">    k : int</span>
@@ -120,8 +120,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    numpy array with shape (``k+1``,1) and dtype ``int``</span>
-<span class="sd">        list containing :math:`{n+j-1 \\choose j}` for :math:`j=0,\\ldots,k`</span>
+<span class="sd">    ``numpy.array(k+1,1)`` of ``dtype`` ``int``</span>
+<span class="sd">        list of :math:`{n+j-1 \\choose j}` for :math:`j=0,\\ldots,k`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>

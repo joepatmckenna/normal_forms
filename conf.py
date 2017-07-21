@@ -19,7 +19,8 @@
 import os
 import sys
 sys.path.append(os.path.abspath('.'))
-sys.path.append(os.path.abspath('sphinxext'))
+sys.path.append(os.path.abspath('./sympy'))
+sys.path.append(os.path.abspath('./sphinxext'))
 
 # -- General configuration ------------------------------------------------
 
@@ -32,7 +33,8 @@ sys.path.append(os.path.abspath('sphinxext'))
 # ones.
 extensions = [
     'sphinx.ext.mathjax', 'sphinx.ext.autodoc', 'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages', 'sphinx.ext.napoleon', 'plot_directive'
+    'sphinx.ext.githubpages', 'sphinx.ext.napoleon', 'plot_directive',
+    'IPython.sphinxext.ipython_directive'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -93,7 +95,8 @@ html_theme_path = ['./_theme']
 #
 html_theme_options = {
     'rootlinks': (("https://joepatmckenna.github.io", "joe mckenna"),
-                  ("https://pypi.python.org/pypi/normal-forms/0.1", "normal_forms"))
+                  ("https://pypi.python.org/pypi/normal-forms/0.1",
+                   "normal_forms"))
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

@@ -1,3 +1,6 @@
+# This file is lifted from the change proposed in
+# https://github.com/matplotlib/matplotlib/pull/6213.
+# License: matplotlib BSD-3.
 """
 A directive for including a matplotlib plot in a Sphinx document.
 
@@ -280,9 +283,6 @@ def setup(app):
 
     app.connect(str('doctree-read'), mark_plot_labels)
 
-    metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
-    return metadata
-
 #------------------------------------------------------------------------------
 # Doctest handling
 #------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ TEMPLATE = """
    {% endif %}
 
    {% for img in images %}
-   .. figure:: {{ build_dir }}/{{ img.basename }}.{{ default_fmt }}
+   .. figure:: {{ build_dir }}/{{ img.basename }}.png
       {% for option in options -%}
       {{ option }}
       {% endfor %}
@@ -398,12 +398,7 @@ TEMPLATE = """
 
    {% for img in images %}
    {% if 'pdf' in img.formats -%}
-   .. figure:: {{ build_dir }}/{{ img.basename }}.pdf
-      {% for option in options -%}
-      {{ option }}
-      {% endfor %}
-
-      {{ caption }}
+   .. image:: {{ build_dir }}/{{ img.basename }}.pdf
    {% endif -%}
    {% endfor %}
 
@@ -542,7 +537,17 @@ def clear_state(plot_rcparams, close=True):
     matplotlib.rcParams.update(plot_rcparams)
 
 
-def get_plot_formats(config):
+def render_figures(code, code_path, output_dir, output_base, context,
+                   function_name, config, context_reset=False,
+                   close_figs=False):
+    """
+    Run a pyplot script and save the low and high res PNGs and a PDF
+    in *output_dir*.
+
+    Save the images under *output_dir* with file names derived from
+    *output_base*
+    """
+    # -- Parse format list
     default_dpi = {'png': 80, 'hires.png': 200, 'pdf': 200}
     formats = []
     plot_formats = config.plot_formats
@@ -554,27 +559,14 @@ def get_plot_formats(config):
     for fmt in plot_formats:
         if isinstance(fmt, six.string_types):
             if ':' in fmt:
-                suffix, dpi = fmt.split(':')
+                suffix,dpi = fmt.split(':')
                 formats.append((str(suffix), int(dpi)))
             else:
                 formats.append((fmt, default_dpi.get(fmt, 80)))
-        elif type(fmt) in (tuple, list) and len(fmt) == 2:
+        elif type(fmt) in (tuple, list) and len(fmt)==2:
             formats.append((str(fmt[0]), int(fmt[1])))
         else:
             raise PlotError('invalid image format "%r" in plot_formats' % fmt)
-    return formats
-
-
-def render_figures(code, code_path, output_dir, output_base, context,
-                   function_name, config, context_reset=False,
-                   close_figs=False):
-    """
-    Run a pyplot script and save the images in *output_dir*.
-
-    Save the images under *output_dir* with file names derived from
-    *output_base*
-    """
-    formats = get_plot_formats(config)
 
     # -- Try to determine if all images already exist
 
@@ -595,11 +587,20 @@ def render_figures(code, code_path, output_dir, output_base, context,
     # Then look for multi-figure output files
     results = []
     all_exists = True
-    for i, code_piece in enumerate(code_pieces):
+    n_shows = -1
+    for code_piece in code_pieces:
+        if len(code_pieces) > 1:
+            if 'plt.show()' in code_piece:
+                n_shows += 1
+            else:
+                # We don't want to inspect whether an image exists for a code
+                # piece without a show.
+                continue
+
         images = []
         for j in xrange(1000):
             if len(code_pieces) > 1:
-                img = ImageFile('%s_%02d_%02d' % (output_base, i, j), output_dir)
+                img = ImageFile('%s_%02d_%02d' % (output_base, n_shows, j), output_dir)
             else:
                 img = ImageFile('%s_%02d' % (output_base, j), output_dir)
             for format, dpi in formats:
@@ -633,8 +634,10 @@ def render_figures(code, code_path, output_dir, output_base, context,
         plot_context.clear()
 
     close_figs = not context or close_figs
-
-    for i, code_piece in enumerate(code_pieces):
+    n_shows = -1
+    for code_piece in code_pieces:
+        if len(code_pieces) > 1 and 'plt.show()' in code_piece:
+            n_shows += 1
 
         if not context or config.plot_apply_rcparams:
             clear_state(config.plot_rcparams, close_figs)
@@ -651,7 +654,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
             elif len(code_pieces) == 1:
                 img = ImageFile("%s_%02d" % (output_base, j), output_dir)
             else:
-                img = ImageFile("%s_%02d_%02d" % (output_base, i, j),
+                img = ImageFile("%s_%02d_%02d" % (output_base, n_shows, j),
                                 output_dir)
             images.append(img)
             for format, dpi in formats:
@@ -670,12 +673,13 @@ def render_figures(code, code_path, output_dir, output_base, context,
 
 
 def run(arguments, content, options, state_machine, state, lineno):
+    # The user may provide a filename *or* Python code content, but not both
+    if arguments and content:
+        raise RuntimeError("plot:: directive can't have both args and content")
+
     document = state_machine.document
     config = document.settings.env.config
     nofigs = 'nofigs' in options
-
-    formats = get_plot_formats(config)
-    default_fmt = formats[0][0]
 
     options.setdefault('include-source', config.plot_include_source)
     keep_context = 'context' in options
@@ -706,7 +710,7 @@ def run(arguments, content, options, state_machine, state, lineno):
         output_base = os.path.basename(source_file_name)
     else:
         source_file_name = rst_file
-        code = textwrap.dedent("\n".join(map(six.text_type, content)))
+        code = textwrap.dedent("\n".join(map(str, content)))
         counter = document.attributes.get('_plot_counter', 0) + 1
         document.attributes['_plot_counter'] = counter
         base, ext = os.path.splitext(os.path.basename(source_file_name))
@@ -825,7 +829,6 @@ def run(arguments, content, options, state_machine, state, lineno):
 
         result = format_template(
             config.plot_template or TEMPLATE,
-            default_fmt=default_fmt,
             dest_dir=dest_dir_link,
             build_dir=build_dir_link,
             source_link=src_link,
@@ -836,7 +839,7 @@ def run(arguments, content, options, state_machine, state, lineno):
             options=opts,
             images=images,
             source_code=source_code,
-            html_show_formats=config.plot_html_show_formats and len(images),
+            html_show_formats=config.plot_html_show_formats and not nofigs,
             caption=caption)
 
         total_lines.extend(result.split("\n"))

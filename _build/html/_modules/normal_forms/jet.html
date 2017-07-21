@@ -87,42 +87,46 @@
 <span class="kn">import</span> <span class="nn">sympy</span>
 <span class="kn">import</span> <span class="nn">combinatorics</span>
 <span class="kn">from</span> <span class="nn">multiindex</span> <span class="k">import</span> <span class="n">multiindex</span>
+<span class="kn">import</span> <span class="nn">bases</span>
 
 
 <div class="viewcode-block" id="jet"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.jet.jet">[docs]</a><span class="k">class</span> <span class="nc">jet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;truncated Taylor&#39;s series</span>
+    <span class="sd">&quot;&quot;&quot;Truncated Taylor&#39;s series.</span>
 
-<span class="sd">    The jet is represented in both an expanded and closed form. The closed form is :math:`\\sum_{0\\leq d\\leq k}` ``coeff[deg]*basis[deg]``, where :math:`d` is ``deg``, while the expanded form is the list of numpy arrays ``coeff`` each with shape :math:`(m,{n+d-1 \\choose d})` and the list of column vectors ``basis``. ``coeff[deg][i,j]`` is the :math:`d^{th}` derivative of :math:`f_i` with respect to the :math:`j^{th}` multiindex divided by the multiindex factorial and ``basis[deg]`` is of the form :math:`\\begin{bmatrix}(x_1-x^{(1)})^d &amp; (x_1-x^{(1)})^{d-1}(x_2-x^{(2)}) &amp; \\cdots&amp; (x_n-x^{(n)})^{d} \\end{bmatrix}^T` where ``x`` :math:`=\\begin{bmatrix} x^{(1)} &amp;\\cdots&amp; x^{(n)}\\end{bmatrix}^T`.</span>
+<span class="sd">    The jet is represented in both a closed and expanded form. The closed form is ``fun``:math:`=\\sum_{0\\leq deg \\leq k}` ``fun_deg[deg]`` where ``fun_deg[deg]=coeff[deg]*pb[deg]`` is a symbolic representation of the degree ``deg`` term. The expanded form is the list ``fun_deg`` of ``sympy.Matrix(m,1)`` objects where ``coeff`` is a list of ``k+1 numpy.array`` objects with shapes :math:`(m,{n+j-1 \\choose j})` for :math:`0\leq j\leq k`. ``pb`` is a dictionary indexed by degree of ``sympy.Matrix`` objects with ``pb[j]`` representing a basis for homogenous :math:`j^{th}` degree polynomials in the variables :math:`x_0,\ldots,x_{n-1}` of the form :math:`\\begin{pmatrix}x_0^j &amp; x_0^{j-1}x_1 &amp; \\cdots &amp; x_{n-1}^j \\end{pmatrix}^T`. ``coeff[deg][coord,term]`` is the coefficient of the monomial ``pb[deg][term]`` in coordinate ``coord`` of the partial derivative of :math:`f` indexed by the ``term`` th ``normal_forms.multiindex.multiindex(deg,n)``.</span>
 
-<span class="sd">    Arguments</span>
-<span class="sd">    ---------</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    f : callable</span>
-<span class="sd">        function that accepts ``n`` arguments and returns tuple of length ``m`` numbers, corresponding to mathematical function :math:`f:\\mathbb{R}^n\\rightarrow\\mathbb{R}^m`</span>
-<span class="sd">    x : number (if ``n==1``) or iterable  (if ``n&gt;=1``)</span>
+<span class="sd">        function that accepts ``n`` arguments and returns tuple of length ``m``, corresponding to mathematical function :math:`f:\\mathbb{R}^n\\rightarrow\\mathbb{R}^m`</span>
+<span class="sd">    x : number if ``n==1`` or tuple of length ``n`` if ``n&gt;=1``</span>
 <span class="sd">        center about which jet is expanded</span>
 <span class="sd">    k : int</span>
 <span class="sd">        maximum degree of jet</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    m : int</span>
-<span class="sd">        number of output numbers, dimension of range of :math:`f`</span>
 <span class="sd">    n : int</span>
-<span class="sd">        number of input arguments, dimension of domain of :math:`f`</span>
-<span class="sd">    var : tuple of Sympy variables</span>
-<span class="sd">        ``x1``, ``x2``, ..., ``xn`` representing input variables</span>
-<span class="sd">    coeff : tuple of numpy arrays</span>
-<span class="sd">        jet coefficients indexed as ``coeff[deg][coord,term]`` where :math:`0\leq` ``deg`` :math:`\leq k`, :math:`0\leq` ``coord`` :math:`\leq m`, and :math:`0\leq` ``term`` :math:`&lt;{m-1+d \\choose d}` and :math:`d` is ``deg``</span>
-<span class="sd">    basis : tuple of Sympy Matrices</span>
-<span class="sd">        monomial basis elements :math:`\\prod_{i\\in S}` ``xi-x[i-1]`` where :math:`S` is a set in the power set of :math:`\\{1,\\ldots,n\\}` and :math:`|S|\\leq k` indexed as ``basis[deg][term]``</span>
-<span class="sd">    series : Sympy Matrix</span>
-<span class="sd">        Sympy Matrix with shape (``m``,1), symbolic representation of jet</span>
-<span class="sd">    series_lam : callable</span>
-<span class="sd">        lambdified version of series</span>
+<span class="sd">        dimension of domain of :math:`f`</span>
+<span class="sd">    m : int</span>
+<span class="sd">        dimension of codomain of :math:`f`</span>
+<span class="sd">    var : list of ``n sympy.symbol`` objects</span>
+<span class="sd">        ``x_0``, ``x_1``, ..., ``x_{n-1}`` representing arguments of :math:`f`</span>
+<span class="sd">    pb : ``normal_forms.bases.poly_basis``</span>
+<span class="sd">        a basis for polynomials in the variables ``var``</span>
+<span class="sd">    coeff : list of ``k+1 numpy.array`` objects of shape :math:`(m,{n+j-1\\choose j})` for :math:`0\leq j\leq k`</span>
+<span class="sd">        jet coefficients indexed as ``coeff[deg][coord,term]`` where :math:`0\leq` ``deg`` :math:`\leq k`, :math:`0\leq` ``coord`` :math:`\leq m`, and :math:`0\leq` ``term`` :math:`&lt;{m-1+deg \\choose deg}`.</span>
+<span class="sd">    fun_deg : list of ``k+1 sympy.Matrix(m,1)`` objects</span>
+<span class="sd">        symbolic representation of each term in the jet indexed as ``fun_deg[deg]`` for ``deg=0,...,k``</span>
+<span class="sd">    fun : ``sympy.Matrix(m,1)``</span>
+<span class="sd">        symbolic representation of jet</span>
+<span class="sd">    fun_lambdified : callable</span>
+<span class="sd">        lambdified version of fun</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">f_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pb</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;initialize the jet&quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
@@ -130,51 +134,98 @@
             <span class="n">n</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+        <span class="c1"># call to f</span>
+        <span class="k">if</span> <span class="n">f_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f_eval</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f_eval</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">f_args</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f_eval</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
             <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">))</span>
+            <span class="c1"># call to f</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_eval</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">m</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
 
-        <span class="c1"># create list of n symbols</span>
-        <span class="n">var</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x1:</span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">var</span>
+        <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">symarray</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">))</span>
+        <span class="k">if</span> <span class="n">pb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pb</span> <span class="o">=</span> <span class="n">bases</span><span class="o">.</span><span class="n">poly_basis</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
 
-        <span class="c1"># compute number of terms per degree in expanded form sum(coeff[:,deg]*basis[deg])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">var</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pb</span> <span class="o">=</span> <span class="n">pb</span>
+
+        <span class="c1"># number of terms per degree of expanded form</span>
         <span class="n">n_terms</span> <span class="o">=</span> <span class="n">combinatorics</span><span class="o">.</span><span class="n">simplicial_list</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 
-        <span class="c1"># compute coeff and basis element vectors of expanded form</span>
         <span class="n">coeff</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">m</span><span class="p">,</span> <span class="n">n_terms</span><span class="p">[</span><span class="n">deg</span><span class="p">]])</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="n">basis</span> <span class="o">=</span> <span class="p">[</span><span class="n">sympy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_terms</span><span class="p">[</span><span class="n">deg</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
-        <span class="n">coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">var</span><span class="p">)])</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">x</span><span class="p">)))</span>
+        <span class="c1"># call to f</span>
+        <span class="k">if</span> <span class="n">f_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f_eval</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f_eval</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">f_args</span><span class="p">)))</span>
+        <span class="n">coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">([</span><span class="n">f_eval</span><span class="p">])</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">x</span><span class="p">)))</span>
         <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">m_idx</span> <span class="o">=</span> <span class="n">multiindex</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_terms</span><span class="p">[</span><span class="n">deg</span><span class="p">]):</span>
+                <span class="c1"># call to f</span>
+                <span class="k">if</span> <span class="n">f_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">f_eval</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">var</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f_eval</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">f_args</span><span class="p">)))</span>
                 <span class="n">coeff</span><span class="p">[</span><span class="n">deg</span><span class="p">][:,</span> <span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                    <span class="n">sympy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">var</span><span class="p">)]),</span> <span class="o">*</span><span class="n">m_idx</span><span class="o">.</span><span class="n">to_var</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+                    <span class="n">sympy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">([</span><span class="n">f_eval</span><span class="p">]),</span> <span class="o">*</span><span class="n">m_idx</span><span class="o">.</span><span class="n">to_var</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
                     <span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="n">m_idx</span><span class="o">.</span><span class="n">factorial</span><span class="p">())</span>
                 <span class="n">basis</span><span class="p">[</span><span class="n">deg</span><span class="p">][</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_idx</span><span class="o">.</span><span class="n">to_polynomial</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
                 <span class="n">m_idx</span><span class="o">.</span><span class="n">increment</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="n">coeff</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="n">basis</span>
 
-        <span class="c1"># compute series and simplify</span>
-        <span class="n">series</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">series</span> <span class="o">+=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">coeff</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span> <span class="o">*</span> <span class="n">basis</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span>
-        <span class="n">series</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">series</span>
+            <span class="n">poly</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">coeff</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span> <span class="o">*</span> <span class="n">basis</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span>
+            <span class="n">m_idx</span> <span class="o">=</span> <span class="n">multiindex</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_terms</span><span class="p">[</span><span class="n">deg</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                    <span class="n">coeff</span><span class="p">[</span><span class="n">deg</span><span class="p">][</span><span class="n">coord</span><span class="p">,</span> <span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">poly</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span><span class="o">.</span><span class="n">coeff</span><span class="p">(</span><span class="n">pb</span><span class="p">[</span><span class="n">deg</span><span class="p">][</span><span class="n">term</span><span class="p">])</span>
+                <span class="n">m_idx</span><span class="o">.</span><span class="n">increment</span><span class="p">()</span>
 
-        <span class="c1"># lambdify series</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">series_lam</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">series</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="n">coeff</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_fun</span><span class="p">()</span>
+
+<div class="viewcode-block" id="jet.update_fun"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.jet.jet.update_fun">[docs]</a>    <span class="k">def</span> <span class="nf">update_fun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute symbolic and lambdified versions of the jet from the coefficients.&quot;&quot;&quot;</span>
+
+        <span class="c1"># symbolic representation by degree</span>
+        <span class="n">fun_deg</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pb</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun_deg</span> <span class="o">=</span> <span class="n">fun_deg</span>
+        <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fun_deg</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pb</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span>
+
+        <span class="c1"># symbolic representation, sum of elements in fun_deg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun_deg</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># lambdified fun</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun_lambdified</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">lambdify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;evaluate the jet&quot;&quot;&quot;</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series_lam</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate the jet.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fun_lambdified</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return symbolic representation of ``deg``th degree jet term.&quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_deg</span><span class="p">[</span><span class="n">deg</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">res</span></div>
+            <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
 
           </div>

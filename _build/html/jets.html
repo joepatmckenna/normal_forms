@@ -28,7 +28,8 @@
     <link rel="index" title="Index" href="genindex.html" >
     <link rel="search" title="Search" href="search.html" >
     <link rel="top" title="normal_forms 0.1 documentation" href="index.html" >
-    <link rel="prev" title="Documentation for normal_forms" href="index.html" > 
+    <link rel="next" title="Lie operators for vector fields" href="lie.html" >
+    <link rel="prev" title="Normal forms" href="normal_forms.html" > 
   </head>
   <body>
 
@@ -64,7 +65,11 @@
            >modules</a>
       </li>
       <li class="active">
-        <a href="index.html" title="Documentation for normal_forms"
+        <a href="lie.html" title="Lie operators for vector fields"
+           accesskey="N">next</a>
+      </li>
+      <li class="active">
+        <a href="normal_forms.html" title="Normal forms"
            accesskey="P">previous</a>
       </li>
     </ul>
@@ -80,14 +85,19 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Taylor’s Series</a><ul>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#a-example">A <span class="math">\(\mathbb{R}\rightarrow\mathbb{R}\)</span> example</a></li>
+<li><a class="reference internal" href="#id1">A <span class="math">\(\mathbb{R}\rightarrow\mathbb{R}^2\)</span> example</a></li>
+<li><a class="reference internal" href="#id2">A <span class="math">\(\mathbb{R}^2\rightarrow\mathbb{R}\)</span> example</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Documentation for normal_forms</a></p>
+  <p class="topless"><a href="normal_forms.html"
+                        title="previous chapter">Normal forms</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lie.html"
+                        title="next chapter">Lie operators for vector fields</a></p>
   <h3>This Page</h3>
   <div>
     <a href="_sources/jets.rst.txt"
@@ -106,40 +116,52 @@
             
   <div class="section" id="taylor-s-series">
 <h1>Taylor’s Series<a class="headerlink" href="#taylor-s-series" title="Permalink to this headline">¶</a></h1>
-<p>The <span class="math">\(k\)</span>-jet centered at <span class="math">\(x_0\)</span> of a function <span class="math">\(f(x)\)</span> is the Taylor’s series truncated at degree <span class="math">\(k\)</span>:</p>
+<p>In order to compute the normal form of an equation <span class="math">\(\dot{x}=f(x)\)</span>, the <a class="reference internal" href="docs/source/normal_forms.html#normal_forms.normal_form.normal_form" title="normal_forms.normal_form.normal_form"><code class="xref py py-class docutils literal"><span class="pre">normal_forms.normal_form.normal_form</span></code></a> class first computes the Taylor series of <span class="math">\(f(x)\)</span> up to a specified degree <span class="math">\(k\)</span>. The class that implements the Taylor series of <span class="math">\(f(x)\)</span> at a specified center <span class="math">\(x_0\)</span> up to a specified degree <span class="math">\(k\)</span> is <a class="reference internal" href="docs/source/normal_forms.html#normal_forms.jet.jet" title="normal_forms.jet.jet"><code class="xref py py-class docutils literal"><span class="pre">normal_forms.jet.jet</span></code></a>.</p>
+<p>The reason why the class is called <code class="docutils literal"><span class="pre">jet</span></code> is that the <span class="math">\(k\)</span>-jet centered at <span class="math">\(x_0\)</span> of a function <span class="math">\(f(x)\)</span> is the Taylor’s series truncated at degree <span class="math">\(k\)</span>:</p>
 <div class="math">
-\[J_k(x) = \sum_{0\leq |\alpha|\leq k}\frac{f^{(\alpha)}(x_0)}{\alpha!}(x-x_0)^{\alpha}.\]</div>
-<p>This formula makes sense for <span class="math">\(f:\mathbb{R}^n\rightarrow\mathbb{R}^m\)</span> with any natural number dimensions <span class="math">\(n\)</span> and <span class="math">\(m\)</span> when <span class="math">\(\alpha\)</span> is a multiindex <span class="math">\(\alpha=(\alpha_1,\ldots,\alpha_n)\)</span> with differentiation, exponentiation, factorial, and absolute value defined as</p>
-<div class="math">
-\[\begin{split}f^{(\alpha)} &amp;= \frac{\partial^{\alpha_1}}{\partial^{\alpha_1} x_1}\cdots\frac{\partial^{\alpha_n}}{\partial^{\alpha_n} x_n}f \\
-x^{\alpha} &amp;= x^{\alpha_1}\cdots x^{\alpha_n} \\
-\alpha! &amp;= \alpha_1!\cdots\alpha_n! \\
-|\alpha| &amp;= |\alpha_1|+\cdots|\alpha_n|\end{split}\]</div>
-<p>This package implements a class <a class="reference internal" href="docs/source/normal_forms.html#normal_forms.jet.jet" title="normal_forms.jet.jet"><code class="xref py py-class docutils literal"><span class="pre">normal_forms.jet.jet</span></code></a> that can be used to manipulate and evaluate jets. For now, if <span class="math">\(f\)</span> is defined in terms of any other operators than the standard <code class="docutils literal"><span class="pre">+-*\</span></code>, then the <code class="docutils literal"><span class="pre">Sympy</span></code> version of that function should be used. Once the <code class="docutils literal"><span class="pre">jet</span></code> is created, it can be evaluated at arbitrary points:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">normal_forms</span> <span class="k">as</span> <span class="nn">nf</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">exp</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">J</span> <span class="o">=</span> <span class="n">nf</span><span class="o">.</span><span class="n">jet</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">J</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="mf">2.718281801146385</span>
+\[J_k(x) = \sum_{0\leq |m|\leq k}\frac{f^{(m)}(x_0)}{m!}(x-x_0)^{m}.\]</div>
+<p>Like when creating a <code class="docutils literal"><span class="pre">normal_form</span></code> object, <span class="math">\(f(x)\)</span>, <span class="math">\(x_0\)</span>, and <span class="math">\(k\)</span> should be supplied to create the <code class="docutils literal"><span class="pre">jet</span></code> object, and non-algebraic functions in <span class="math">\(f(x)\)</span> should be defined with the <code class="docutils literal"><span class="pre">sympy</span></code> variants of those functions. Once the <code class="docutils literal"><span class="pre">jet</span></code> is created, it can be evaluated at points in the domain:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">normal_forms</span> <span class="kn">import</span> <span class="n">jet</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">sympy</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">sympy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">h</span> <span class="o">=</span> <span class="n">jet</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="mf">2.718281801146385</span>
 </pre></div>
 </div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The domain and range may have the same dimension (<span class="math">\(n=m\)</span>), for example, <span class="math">\(f(x)=\sin(x)\)</span>:</p>
-<p>(<a class="reference external" href="./normal_forms/examples/jet/jet1.py">Source code</a>, <a class="reference external" href="./normal_forms/examples/jet/jet1.png">png</a>, <a class="reference external" href="./normal_forms/examples/jet/jet1.hires.png">hires.png</a>, <a class="reference external" href="./normal_forms/examples/jet/jet1.pdf">pdf</a>)</p>
+<p>The formula above makes sense for <span class="math">\(f:\mathbb{R}^n\rightarrow\mathbb{R}^p\)</span> with any natural number dimensions <span class="math">\(n\)</span> and <span class="math">\(p\)</span> when <span class="math">\(m\)</span> is a multiindex <span class="math">\(m=(m_1,\ldots,m_n)\)</span> with derivative, exponent, factorial, and absolute value defined as</p>
+<div class="math">
+\[\begin{split}f^{(m)} &amp;= \frac{\partial^{m_1}}{\partial^{m_1} x_1}\cdots\frac{\partial^{m_n}}{\partial^{m_n} x_n}f \\
+x^{m} &amp;= x^{m_1}\cdots x^{m_n} \\
+m! &amp;= m_1!\cdots m_n! \\
+|m| &amp;= |m_1|+\cdots+|m_n|.\end{split}\]</div>
+<p>To follow are a few examples for different choices of domain <span class="math">\(\mathbb{R}^n\)</span> and range <span class="math">\(\mathbb{R}^p\)</span> of <span class="math">\(f\)</span>.</p>
+<div class="section" id="a-example">
+<h2>A <span class="math">\(\mathbb{R}\rightarrow\mathbb{R}\)</span> example<a class="headerlink" href="#a-example" title="Permalink to this headline">¶</a></h2>
+<p>The domain and range may have the same dimension, for example, <span class="math">\(f(x)=\sin(x)\)</span>:</p>
+<p>(<a class="reference external" href="./normal_forms/examples/jet/R1_to_R1.py">Source code</a>, <a class="reference external" href="./normal_forms/examples/jet/R1_to_R1.png">png</a>, <a class="reference external" href="./normal_forms/examples/jet/R1_to_R1.hires.png">hires.png</a>, <a class="reference external" href="./normal_forms/examples/jet/R1_to_R1.pdf">pdf</a>)</p>
 <div class="figure">
-<img alt="_images/jet1.png" src="_images/jet1.png" />
+<img alt="_images/R1_to_R1.png" src="_images/R1_to_R1.png" />
 </div>
-<p>The dimension of the range may be greater than the dimension of the domain (<span class="math">\(n&lt;m\)</span>), for example, <span class="math">\(f(t)=(\sin(t),\cos(t))\)</span> viewed here as a parametric plot in the <span class="math">\(xy\)</span>-plane:</p>
-<p>(<a class="reference external" href="./normal_forms/examples/jet/jet2.py">Source code</a>, <a class="reference external" href="./normal_forms/examples/jet/jet2.png">png</a>, <a class="reference external" href="./normal_forms/examples/jet/jet2.hires.png">hires.png</a>, <a class="reference external" href="./normal_forms/examples/jet/jet2.pdf">pdf</a>)</p>
-<div class="figure">
-<img alt="_images/jet2.png" src="_images/jet2.png" />
 </div>
-<p>The dimension of the range may be less than the dimension of the domain (<span class="math">\(n&gt;m\)</span>), for example, <span class="math">\(f(x,y)=\sin(x)\cos(y)\)</span>:</p>
-<p>(<a class="reference external" href="./normal_forms/examples/jet/jet3.py">Source code</a>, <a class="reference external" href="./normal_forms/examples/jet/jet3.png">png</a>, <a class="reference external" href="./normal_forms/examples/jet/jet3.hires.png">hires.png</a>, <a class="reference external" href="./normal_forms/examples/jet/jet3.pdf">pdf</a>)</p>
+<div class="section" id="id1">
+<h2>A <span class="math">\(\mathbb{R}\rightarrow\mathbb{R}^2\)</span> example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The dimension of the range may be greater than the dimension of the domain, for example, <span class="math">\(f(t)=(\sin(t),\cos(t))\)</span> viewed here as a parametric plot in the <span class="math">\(xy\)</span>-plane:</p>
+<p>(<a class="reference external" href="./normal_forms/examples/jet/R1_to_R2.py">Source code</a>, <a class="reference external" href="./normal_forms/examples/jet/R1_to_R2.png">png</a>, <a class="reference external" href="./normal_forms/examples/jet/R1_to_R2.hires.png">hires.png</a>, <a class="reference external" href="./normal_forms/examples/jet/R1_to_R2.pdf">pdf</a>)</p>
 <div class="figure">
-<img alt="_images/jet3.png" src="_images/jet3.png" />
+<img alt="_images/R1_to_R2.png" src="_images/R1_to_R2.png" />
+</div>
+</div>
+<div class="section" id="id2">
+<h2>A <span class="math">\(\mathbb{R}^2\rightarrow\mathbb{R}\)</span> example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>The dimension of the range may be less than the dimension of the domain, for example, <span class="math">\(f(x,y)=\sin(x)\cos(y)\)</span>:</p>
+<p>(<a class="reference external" href="./normal_forms/examples/jet/R2_to_R1.py">Source code</a>, <a class="reference external" href="./normal_forms/examples/jet/R2_to_R1.png">png</a>, <a class="reference external" href="./normal_forms/examples/jet/R2_to_R1.hires.png">hires.png</a>, <a class="reference external" href="./normal_forms/examples/jet/R2_to_R1.pdf">pdf</a>)</p>
+<div class="figure">
+<img alt="_images/R2_to_R1.png" src="_images/R2_to_R1.png" />
 </div>
 </div>
 </div>

@@ -88,35 +88,26 @@
 
 
 <div class="viewcode-block" id="multiindex"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.multiindex.multiindex">[docs]</a><span class="k">class</span> <span class="nc">multiindex</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;a multiindex class</span>
+    <span class="sd">&quot;&quot;&quot;A multiindex representation.</span>
+
+<span class="sd">    In this implementation, the multiindex :math:`(m_1,\\ldots,m_n)` corresponds to partial derivative :math:`\\frac{\\partial}{\\partial x_{m_1}}\\cdots\\frac{\\partial}{\\partial x_{m_n}}f` and homogenous :math:`n^{th}` degree monomial :math:`x_1^{m_1}\\cdots x_n^{m_n}`. A &#39;telephone-book&#39; ordering is used and indices within the multiindex are assumed to be non-decreasing. For example, the multiindices with length ``n=2`` and with indices less than ``idx_max=3`` are, in increasing order: (0,0), (0,1), (0,2), (1,1), (1,2), (2,2). The next multiindex is cycled back to the first multiindex.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    n : int</span>
 <span class="sd">        number of indices</span>
 <span class="sd">    idx_max : int</span>
-<span class="sd">        upper bound, indices can take nonnegative values less than this</span>
+<span class="sd">        upper bound, indices can take nonnegative values less than ``idx_max``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">idx_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;initialize indices as zeros</span>
-
-<span class="sd">        Attributes</span>
-<span class="sd">        ----------</span>
-<span class="sd">        n : int</span>
-<span class="sd">            number of indices</span>
-<span class="sd">        idx_max : int</span>
-<span class="sd">            upper bound, indices can take nonnegative values less than this</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">idx_max</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize zero multiindex.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">idx_max</span> <span class="o">=</span> <span class="n">idx_max</span>
 
 <div class="viewcode-block" id="multiindex.increment"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.multiindex.multiindex.increment">[docs]</a>    <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Increment multiindex.</span>
-
-<span class="sd">        A &#39;telephone-book&#39; ordering is used and within the multiindex indices are assumed to be increasing from left to right. For example, the multiindices with length ``n==2`` and with indices less than ``idx_max=3`` are, in increasing order: (0,0), (0,1), (0,2), (1,1), (1,2), (2,2). The next multiindex is cycled back to the first multiindex.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Increment multiindex.&quot;&quot;&quot;</span>
 
         <span class="n">n_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_max</span><span class="p">):</span>
@@ -129,55 +120,64 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="multiindex.to_polynomial"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.multiindex.multiindex.to_polynomial">[docs]</a>    <span class="k">def</span> <span class="nf">to_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; convert multiindex to corresponding polynomial</span>
+<div class="viewcode-block" id="multiindex.to_polynomial"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.multiindex.multiindex.to_polynomial">[docs]</a>    <span class="k">def</span> <span class="nf">to_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert multiindex to corresponding polynomial.</span>
 
-<span class="sd">        Arguments</span>
-<span class="sd">        ---------</span>
-<span class="sd">        var : iterable</span>
-<span class="sd">            list of Sympy variables ``x1``, ``x2``, ..., ``xn``</span>
-<span class="sd">        x : iterable</span>
-<span class="sd">            roots of returned polynomial</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        var : tuple of ``sympy.symbol`` objects</span>
+<span class="sd">            list of variables ``x_0``, ``x_1``, ..., ``x_{n-1}``</span>
+<span class="sd">        x : tuple of length n, optional</span>
+<span class="sd">            roots of polynomial</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Sympy symbolic expression</span>
-<span class="sd">            :math:`\\prod_{i=1}^{n}` ``var[i-1]-xi``</span>
+<span class="sd">        ``sympy`` expression</span>
+<span class="sd">            :math:`\\prod_{i=0}^{n}` ``var[i]`` if ``x`` is not supplied, otherwise :math:`\\prod_{i=0}^{n}` ``var[i]-x[i]``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">var</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span></div>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">var</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">var</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="multiindex.to_var"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.multiindex.multiindex.to_var">[docs]</a>    <span class="k">def</span> <span class="nf">to_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;convert multiindex to list of variables</span>
+        <span class="sd">&quot;&quot;&quot;Convert multiindex to list of variables.</span>
 
-<span class="sd">        Arguments</span>
-<span class="sd">        ---------</span>
-<span class="sd">        var : iterable</span>
-<span class="sd">            list of Sympy variables ``x1``, ``x2``, ..., ``xn``</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        var : tuple of ``sympy.symbol`` objects</span>
+<span class="sd">            list of variables ``x_0``, ``x_1``, ..., ``x_{n-1}``</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        list of Sympy symbolic expressions</span>
+<span class="sd">        list of ``sympy.symbol`` objects</span>
 <span class="sd">            list of ``var[idx]`` for ``idx`` in ``self.idx``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">var</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="multiindex.factorial"><a class="viewcode-back" href="../../docs/source/normal_forms.html#normal_forms.multiindex.multiindex.factorial">[docs]</a>    <span class="k">def</span> <span class="nf">factorial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;multiindex factorial</span>
+        <span class="sd">&quot;&quot;&quot;Return multiindex factorial.</span>
 
-<span class="sd">        Multiindex factorial is defined as :math:`(\\alpha_1,\\ldots,\\alpha_k)!=\\alpha_1!\cdots \\alpha_k!`. In this implementation, :math:`\\alpha_i` corresponds to the number of occurences of ``i`` in ``self.idx``.</span>
+<span class="sd">        In this implementation, multiindex :math:`m=(m_1,\ldots,m_n)` factorial is defined as :math:`\\alpha_1!\cdots \\alpha_n!` where :math:`\\alpha_i` is the number of occurences of :math:`i` in :math:`m`.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
+<span class="sd">            multiindex factorial</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">fac_key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># record number of occurences of idx in self.idx</span>
+        <span class="n">fac_dict</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">:</span>
-            <span class="n">fac_key</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">fac</span> <span class="o">=</span> <span class="n">combinatorics</span><span class="o">.</span><span class="n">factorial_list</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fac_key</span><span class="p">)))</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">fac</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fac_key</span><span class="p">])</span></div></div>
+            <span class="n">fac_dict</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># list of factorials</span>
+        <span class="n">fac</span> <span class="o">=</span> <span class="n">combinatorics</span><span class="o">.</span><span class="n">factorial_list</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fac_dict</span><span class="p">)))</span>
+
+        <span class="c1"># return multiindex factorial</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">fac</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fac_dict</span><span class="p">])</span></div></div>
 </pre></div>
 
           </div>
