@@ -27,4 +27,4 @@ The table of contents of this document is
    jets
    lie
 
-.. _`a Python package`: https://pypi.python.org/pypi/normal-forms/0.1
+.. _`a Python package`: https://pypi.python.org/pypi/normal-forms
